@@ -1,7 +1,7 @@
-import * as express from "express";
-import * as path from "path";
-import * as url from "url";
-import * as proxy from "express-http-proxy";
+const url = require("url");
+const proxy = require("express-http-proxy");
+const path = require("path");
+const express = require("express");
 
 const app = express();
 
@@ -11,3 +11,9 @@ const streamProxy = proxy("de-inference-service");
 app.use("/stream", streamProxy);
 
 app.use(express.static(path.join(__dirname, "build")));
+
+const port = process.env.PORT || 8080;
+
+app.listen(port);
+
+console.log("App is listening on port " + port);
