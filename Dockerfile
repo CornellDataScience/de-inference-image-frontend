@@ -13,4 +13,4 @@ RUN npm run build
 
 # Serving webserver
 EXPOSE ${PORT}
-CMD [ "npm", "run start-server" ] 
+CMD [ "npm", "run", "start-server" ] 
