@@ -21,7 +21,7 @@ class App extends Component {
     this.state.socket.onmessage = boundOnReceive;
   }
   
-  handleClick = () => {
+  sendImage = () => {
     let screenshot = this.webcam.getScreenshot();
     this.state.socket.send(screenshot);
     // this.setState({ screenshot: screenshot });
@@ -38,7 +38,7 @@ class App extends Component {
           <h2>Screenshots</h2>
           <div className='screenshots'>
             <div className='controls'>
-              <button onClick={this.handleClick}>capture</button>
+              <button onClick={this.sendImage}>capture</button>
             </div>
             {this.state.screenshot ? <img src={this.state.screenshot} /> : null}
           </div>
