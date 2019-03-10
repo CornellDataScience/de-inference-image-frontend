@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: de-frontend
+  labels:
+    app: de-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: de-frontend
+  template:
+    metadata:
+      labels:
+        app: de-frontend
+    spec:
+      containers:
+      - name: de-frontend
+        image: cornelldatascience/de-inference-image-frontend:latest
+        ports:
+        - containerPort: 8080
