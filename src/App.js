@@ -15,7 +15,7 @@ class App extends Component {
     this.state = {
       screenshot: null,
       tab: 0,
-      socket: new WebSocket("ws://localhost:8765")
+      socket: new WebSocket(makeWebsocketURL())
     };
 
     this.state.socket.onmessage = boundOnReceive;
@@ -55,6 +55,19 @@ class App extends Component {
   componentWillUnmount() {
     clearInterval(this.intervalID);
   }
+}
+
+let makeWebsocketURL = function() {
+  let loc = window.location, new_uri;
+  if (loc.protocol === "https:") {
+      new_uri = "wss:";
+  } else {
+      new_uri = "ws:";
+  }
+  new_uri += "//" + loc.host;
+  new_uri += loc.pathname + "/stream";
+
+  return new_uri;
 }
 
 export default App;
