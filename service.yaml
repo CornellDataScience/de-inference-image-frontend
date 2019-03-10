@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: de-inference-service-frontend
+  name: de-frontend-service
 spec:
   selector:
-    app: de-inference-frontend
+    app: de-frontend
   ports:
   - protocol: TCP
     port: 80
