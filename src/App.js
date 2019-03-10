@@ -8,22 +8,24 @@ class App extends Component {
     super(props);
     this.state = {
       screenshot: null,
-      tab: 0
+      tab: 0,
+      socket: new WebSocket("ws://localhost:8765")
     };
   }
   
   handleClick = () => {
     const screenshot = this.webcam.getScreenshot();
     this.setState({ screenshot });
+    this.state.socket.send(screenshot);
   }
 
   render() {
     return (
       <div className="App"> 
         <Webcam
-              audio={false}
-              ref={node => this.webcam = node}
-            />
+          audio={false}
+          ref={node => this.webcam = node}
+        />
         <div>
           <h2>Screenshots</h2>
           <div className='screenshots'>
