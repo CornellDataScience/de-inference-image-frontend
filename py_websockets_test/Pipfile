@@ -9,6 +9,7 @@ verify_ssl = true
 asyncio = "*"
 websockets = "*"
 pillow = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.6"
