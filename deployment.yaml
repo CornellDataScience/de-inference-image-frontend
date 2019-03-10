@@ -1,11 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: de-frontend
+  name: de-frontend-deployment
   labels:
     app: de-frontend
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: de-frontend
@@ -15,7 +14,31 @@ spec:
         app: de-frontend
     spec:
       containers:
-      - name: de-frontend
+      - name: de-frontend-image
         image: cornelldatascience/de-inference-image-frontend:latest
         ports:
         - containerPort: 8080
+        env:
+          - name: GITHUB_ID
+            valueFrom:
+              secretKeyRef:
+                name: githuboauth
+                key: id
+          - name: GITHUB_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: githuboauth
+                key: secret
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+    name: de-frontend-autoscaler
+spec:
+    scaleTargetRef:
+        apiVersion: extensions/v1beta1
+        kind: Deployment
+        name: de-frontend-deployment
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
