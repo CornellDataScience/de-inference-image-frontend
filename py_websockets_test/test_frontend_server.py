@@ -23,9 +23,8 @@ async def img_receiver(websocket, path):
         while True:
             # read encoded image string
             image_str = await websocket.recv()
-
             # if empty, skip and wait again
-            if not image_str:
+            if not image_str or image_str == "null":
                 continue
 
             # slice base64 string into data and metadata
@@ -36,7 +35,6 @@ async def img_receiver(websocket, path):
             print("(conn {}, img {}) reciv: {}".format(current_connection, current_image_count, image_metadata))
 
             # create pillow image
-            # image = Image.open(BytesIO(base64.decodebytes(bytearray(image_data, encoding="utf-16"))))
             image = Image.open(BytesIO(base64.b64decode(image_data)))
 
             # draw text to image

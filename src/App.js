@@ -46,6 +46,15 @@ class App extends Component {
       </div>
     );
   }
+
+  componentDidMount() {
+      this.intervalID = setInterval( () => this.sendImage(), 500
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalID);
+  }
 }
 
 export default App;
