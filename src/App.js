@@ -8,31 +8,14 @@ class App extends Component {
     super(props);
 
     this.state = {
-      displayedImage: null,
+      currentImage: null,
       tab: 0,
       socket: null,
     };
-  }
-  
-  sendImage = () => {
-    // handle null socket
-    if(this.state.socket) {
-      let screenshot = this.webcam.getScreenshot();
 
-      // send image to backend
-      this.state.socket.send(screenshot);
-
-      // draw image on canvas
-      // this.setState({ displayedImage: screenshot });
-      let c = document.getElementById("displayCanvas");
-      let ctx = c.getContext("2d");
-      let ssImg = new Image();
-      ssImg.onload = function() {
-        ctx.drawImage(ssImg, 0, 0, 640, 480);
-      };
-      ssImg.src = screenshot;
-      console.log("drew image");
-    }
+    // bind methods
+    this.boundOnReceive = this.boundOnReceive.bind(this);
+    this.sendImage = this.sendImage.bind(this);
   }
 
   render() {
@@ -66,35 +49,71 @@ class App extends Component {
   componentDidMount() {
     // let socket = new WebSocket(makeWebsocketURL());
     let socket = new WebSocket("ws://localhost:8765");
-    this.setState({ socket: socket }, (() => this.state.socket.onmessage = boundOnReceive).bind(this));
+    socket.onmessage = this.boundOnReceive;
+    this.setState({ socket: socket });
+
+    //TODO: start image sending process 
   }
 
   componentWillUnmount() {
     
   }
-}
 
-let boundOnReceive = (function (event) {
-  // TODO: draw box
-  let faceData =  JSON.parse(event.data);
-  if (event.data) {
-    for(let i = 0; i < faceData.length; i++){
-      let points = faceData[i]["coordinates"];
-      console.log(points);
+  boundOnReceive(event) {
+    // extract event data
+    let faceData =  JSON.parse(event.data);
+    
+    // get canvas
+    let canvas = document.getElementById("displayCanvas");
+    let context = canvas.getContext('2d');
+  
+    // draw screenshot
+    let ssImg = new Image();
+    ssImg.onload = function() {
+      // add image
+      context.drawImage(ssImg, 0, 0, 640, 480);
 
-      let canvas = document.getElementById("displayCanvas");
-      let context = canvas.getContext('2d');
-      context.beginPath();
-      // context.rect(points[0], points[1], points[2], points[3]);
-      context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]); 
-      context.lineWidth = 3;
-      context.strokeStyle = 'red';
-      context.stroke();
+      // draw boxes 
+      if (event.data) {
+        // get context for canvas to draw on
+    
+        for(let i = 0; i < faceData.length; i++){
+          let points = faceData[i]["coordinates"];
+          // draw image
+          context.beginPath();
+          context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]); 
+          context.lineWidth = 1.5;
+          context.strokeStyle = 'red';
+          context.stroke();
+    
+          // add label
+          context.fontSize = "10px";
+          context.fillStyle = "red";
+          context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5); 
+        }
+      }
+    };
+    ssImg.src = this.state.currentImage;
+  
+    // after we draw, send a new image in 0.1s
+    setTimeout(function() { this.sendImage(); }.bind(this), 100);
+  }
+  
+  sendImage() {
+    // handle null socket
+    if(this.state.socket) {
+      let screenshot = this.webcam.getScreenshot();
+  
+      // store current image
+      this.setState({ currentImage: screenshot });
+  
+      // send image to backend
+      this.state.socket.send(screenshot);
 
-      // this.setState({ screenshot: event.data });
+      console.log("sent");
     }
   }
-}).bind(this);
+}
 
 let makeWebsocketURL = function() {
   let loc = window.location, new_uri;
