@@ -23,7 +23,15 @@ class App extends Component {
       this.state.socket.send(screenshot);
 
       // draw image on canvas
-      this.setState({ displayedImage: screenshot });
+      // this.setState({ displayedImage: screenshot });
+      let c = document.getElementById("displayCanvas");
+      let ctx = c.getContext("2d");
+      let ssImg = new Image();
+      ssImg.onload = function() {
+        ctx.drawImage(ssImg, 0, 0, 640, 480);
+      };
+      ssImg.src = screenshot;
+      console.log("drew image");
     }
   }
 
@@ -31,6 +39,7 @@ class App extends Component {
     return (
       <div className="App"> 
         <Webcam
+          id="cameraView"
           audio={false}
           ref={node => this.webcam = node}
         />
@@ -41,12 +50,13 @@ class App extends Component {
               <button onClick={this.sendImage}>capture</button>
             </div>
 
-            <div style={{width:"500", height:"500", margin:"20px 60px", border:"1px solid blue"}}>
+            <canvas id="displayCanvas" width="640" height="480" /> 
+            {/* <div style={{width:"500", height:"500", margin:"20px 60px", border:"1px solid blue"}}>
               <div style={{width:"100%", height:"100%", position:"relative"}}>
                 {this.state.displayedImage ? <img id="displayedImage" src={this.state.displayedImage} style={{ position:"absolute", top:"0px", left:"0px"}} /> : null}
                 <canvas id="overlayCanvas" style={{ width:"500", height:"500", position:"absolute", top:"0px", left:"0px", "backgroundColor": "rgba(255,0,0,.1)"}}></canvas>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -66,20 +76,23 @@ class App extends Component {
 
 let boundOnReceive = (function (event) {
   // TODO: draw box
-  console.log(event.data)
-  if (event.data.name) {
-    let points = event.data["coordinates"];
+  let faceData =  JSON.parse(event.data);
+  if (event.data) {
+    for(let i = 0; i < faceData.length; i++){
+      let points = faceData[i]["coordinates"];
+      console.log(points);
 
-    let canvas = document.getElementById("overlayCanvas");
-    let context = canvas.getContext('2d');
-    context.beginPath();
-    // context.rect(188, 50, 200, 100);
-    context.rect(points[0], points[1], points[2], points[3]);
-    context.lineWidth = 20;
-    context.strokeStyle = 'red';
-    context.stroke();
+      let canvas = document.getElementById("displayCanvas");
+      let context = canvas.getContext('2d');
+      context.beginPath();
+      // context.rect(points[0], points[1], points[2], points[3]);
+      context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]); 
+      context.lineWidth = 3;
+      context.strokeStyle = 'red';
+      context.stroke();
 
-    // this.setState({ screenshot: event.data });
+      // this.setState({ screenshot: event.data });
+    }
   }
 }).bind(this);
 
