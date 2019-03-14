@@ -47,8 +47,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // let socket = new WebSocket(makeWebsocketURL());
-    let socket = new WebSocket("ws://localhost:8765");
+    let socket = new WebSocket(makeWebsocketURL());
+    // let socket = new WebSocket("ws://localhost:8765");
     socket.onmessage = this.boundOnReceive;
     this.setState({ socket: socket });
 
