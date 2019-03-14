@@ -30,7 +30,9 @@ const proxy = httpProxy.createProxyServer({target: "de-inference-service", ws: t
 // TODO: abstract with environment variable?
 // const streamProxy = proxy("de-inference-service");
 
-app.use("/stream", proxy);
+app.use("/stream", function(req, res){
+  proxy.web(req, res);
+});
 
 app.use(express.static(path.join(__dirname, "build")));
 
