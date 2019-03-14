@@ -75,8 +75,6 @@ class App extends Component {
 
       // draw boxes 
       if (event.data) {
-        // get context for canvas to draw on
-    
         for(let i = 0; i < faceData.length; i++){
           let points = faceData[i]["coordinates"];
           // draw image
