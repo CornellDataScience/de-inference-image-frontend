@@ -25,7 +25,8 @@ passport.deserializeUser(function(object, cb) {
 })*/
 
 const app = express();
-const proxy = httpProxy.createProxyServer({target: "de-inference-service", ws: true });
+const proxy = httpProxy.createProxyServer({
+  target: "http://de-inference-service", ws: true });
 
 // TODO: abstract with environment variable?
 // const streamProxy = proxy("de-inference-service");
@@ -40,7 +41,8 @@ const port = process.env.PORT || 8080;
 
 const server = require("http").createServer(app);
 server.on("upgrade", function(req, socket, head) {
-  proxy.ws(req, socket, head);
+  try{proxy.ws(req, socket, head);}
+  catch (err) {console.log(err)}
 })
 server.listen(port);
 
