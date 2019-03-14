@@ -92,9 +92,12 @@ class App extends Component {
       }
     };
     ssImg.src = this.state.currentImage;
-  
+    
+    // send new image immediately
+    this.sendImage();
+    
     // after we draw, send a new image in 0.1s
-    setTimeout(function() { this.sendImage(); }.bind(this), 100);
+    // setTimeout(function() { this.sendImage(); }.bind(this), 100);
   }
   
   sendImage() {
