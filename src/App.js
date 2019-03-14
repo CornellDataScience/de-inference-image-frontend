@@ -95,7 +95,7 @@ class App extends Component {
     
     // send new image immediately
     this.sendImage();
-    
+
     // after we draw, send a new image in 0.1s
     // setTimeout(function() { this.sendImage(); }.bind(this), 100);
   }
@@ -111,7 +111,7 @@ class App extends Component {
       // send image to backend
       this.state.socket.send(screenshot);
 
-      console.log("sent");
+      // console.log("sent");
     }
   }
 }
