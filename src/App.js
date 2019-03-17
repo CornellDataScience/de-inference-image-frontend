@@ -17,7 +17,6 @@ class App extends Component {
     this.boundOnReceive = this.boundOnReceive.bind(this);
     this.sendImage = this.sendImage.bind(this);
   }
-
   render() {
     return (
       <div className="App"> 
@@ -108,10 +107,12 @@ class App extends Component {
       // store current image
       this.setState({ currentImage: screenshot }, (
         // send image to backend in callback after state is updated
-        () => this.state.socket.send(screenshot)).bind(this)
+        function () { 
+          this.state.socket.send(screenshot);
+          console.log("sent"); 
+        }).bind(this) 
       );
-
-      // console.log("sent");
+      
     }
   }
 }
@@ -123,10 +124,10 @@ let makeWebsocketURL = function() {
   } else {
       new_uri = "ws:";
   }
-  new_uri += "//" + loc.host;
-  new_uri += loc.pathname + "stream";
-
-  // console.log(new_uri);
+  
+  let new_host = loc.host.slice(0, loc.host.indexOf(':'));
+  new_uri += "//" + new_host + ":8080";
+  new_uri += loc.pathname;
 
   return new_uri;
 }

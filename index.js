@@ -1,10 +1,22 @@
-const url = require("url");
+"use strict";
+
+// const url = require("url");
 // const proxy = require("express-http-proxy");
 const path = require("path");
 const express = require("express");
-const passport = require("passport");
-const Strategy = require("passport-github").Strategy;
-const httpProxy = require('http-proxy')
+// const passport = require("passport");
+// const Strategy = require("passport-github").Strategy;
+// const httpProxy = require('http-proxy')
+const http = require('http');
+// const fs = require('fs');
+const WebSocketServer = require('websocket').server;
+
+// set the port we'll send to later
+const port = process.env.PORT || 8080;
+
+// create express app
+const app = express();
+app.use(express.static(path.join(__dirname, "build")));
 
 /*passport.use(new Strategy({
     clientID: process.env["GITHUB_ID"],
@@ -24,9 +36,62 @@ passport.deserializeUser(function(object, cb) {
   cb(null, object);
 })*/
 
-const app = express();
-const proxy = httpProxy.createProxyServer({
-  target: "http://de-inference-service", ws: true });
+// create http server
+const server = http.createServer(function(request, response) {
+  // send 404 for all HTTP requests
+  console.log((new Date()) + ' Received request for ' + request.url);
+  response.writeHead(404);
+  response.end();
+});
+server.listen(port, function() {
+  console.log((new Date()) + ' Server is listening on port ' + port);
+});
+
+// create websocket server on top of http server
+// TODO: figure out appropriate max and min names
+const wsServer = new WebSocketServer({
+  httpServer: server,
+  autoAcceptConnections: false,
+  maxReceivedFrameSize: 1000000,
+  maxReceivedMessageSize: 10000000
+});
+
+function originIsAllowed(origin) {
+  // TODO: put logic here to detect whether the specified origin is allowed.
+  return true;
+}
+
+wsServer.on('request', function(request) {
+  if (!originIsAllowed(request.origin)) {
+    // Make sure we only accept requests from an allowed origin
+    request.reject();
+    console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
+    return;
+  }
+  
+  // get a connection
+  let connection = request.accept(null, request.origin);
+  console.log((new Date()) + ' Connection accepted.');
+
+  // handle messages over connection
+  connection.on('message', function(message) {
+    console.log("onmessage called");
+
+    // ensure we actually received a utf8 message
+    if (message.type === 'utf8') {
+      console.log('Received utf8 Message');
+
+      // TODO: POST message to backend
+    }
+  });
+
+  // handle connection close
+  connection.on('close', function(reasonCode, description) {
+    console.log(reasonCode);
+    console.log(description);
+    console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+  });
+});
 
 // TODO: abstract with environment variable?
 // const streamProxy = proxy("de-inference-service");
@@ -34,18 +99,5 @@ const proxy = httpProxy.createProxyServer({
 //app.use("/stream", function(req, res){
 //  proxy.web(req, res);
 //});
-
-app.use(express.static(path.join(__dirname, "build")));
-
-const port = process.env.PORT || 8080;
-
-const server = require("http").createServer(app);
-server.on("upgrade", function(req, socket, head) {
-  try{proxy.ws(req, socket, head);}
-  catch (err) {console.log(err)}
-})
-server.listen(port);
-
-// app.listen(port);
 
 console.log("App is listening on port " + port);
