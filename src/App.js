@@ -106,10 +106,10 @@ class App extends Component {
       let screenshot = this.webcam.getScreenshot();
   
       // store current image
-      this.setState({ currentImage: screenshot });
-  
-      // send image to backend
-      this.state.socket.send(screenshot);
+      this.setState({ currentImage: screenshot }, (
+        // send image to backend in callback after state is updated
+        () => this.state.socket.send(screenshot)).bind(this)
+      );
 
       // console.log("sent");
     }
