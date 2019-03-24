@@ -4,6 +4,7 @@
 // const proxy = require("express-http-proxy");
 const path = require("path");
 const express = require("express");
+const requestlib = require("request");
 // const passport = require("passport");
 // const Strategy = require("passport-github").Strategy;
 // const httpProxy = require('http-proxy')
@@ -82,6 +83,18 @@ wsServer.on('request', function(request) {
       console.log('Received utf8 Message');
 
       // TODO: POST message to backend
+      let postData = {image:  message.utf8Data};
+      let options = {
+        method: 'post',
+        body: postData,
+        json: true,
+        // url: "http://localhost:8000"
+        url: "http://de-inference-service"
+      }
+      requestlib.post(options, function callback(err, httpResponse, body) {
+        // TODO: send response back over websocket
+        console.log('Upload successful!  Server responded with:', body);
+      });
     }
   });
 

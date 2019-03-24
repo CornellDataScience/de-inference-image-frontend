@@ -154,6 +154,7 @@ let makeWebsocketURL = function() {
   }
 
   let new_host = loc.host.slice(0, loc.host.indexOf(':'));
+  // new_host = "localhost"; // TODO: remove this line when not running locally
   new_uri += "//" + new_host + ":8080";
   new_uri += loc.pathname;
 
