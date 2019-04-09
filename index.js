@@ -38,12 +38,8 @@ passport.deserializeUser(function(object, cb) {
 })*/
 
 // create http server
-const server = http.createServer(function(request, response) {
-  // send 404 for all HTTP requests
-  console.log((new Date()) + ' Received request for ' + request.url);
-  response.writeHead(404);
-  response.end();
-});
+app.use(express.static(path.join(__dirname, "build")));
+const server = http.createServer(app);
 server.listen(port, function() {
   console.log((new Date()) + ' Server is listening on port ' + port);
 });
