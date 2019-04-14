@@ -88,7 +88,7 @@ wsServer.on('request', function(request) {
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         // send response back over websocket
-        // console.log('Upload successful!  Server responded with:', body);
+        console.log('Upload successful!  Server responded with:', body);
         if (body) 
             connection.send(JSON.stringify(body));
       });

@@ -159,6 +159,7 @@ let makeWebsocketURL = function() {
 
   new_uri += "//" + loc.host;
   new_uri += loc.pathname;
+  console.log(new_uri);
 
   return new_uri;
 }
