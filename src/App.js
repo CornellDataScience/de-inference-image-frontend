@@ -81,7 +81,7 @@ class App extends Component {
   boundOnReceive(event) {
     // updating currentlatency according to currentImageStartTime
     const currentTime = new Date();
-    const currentLatency = this.state.currentImageStartTime - currentTime;
+    const currentLatency = currentTime - this.state.currentImageStartTime;
 
     this.setState({
       currentLatency: currentLatency,
