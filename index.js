@@ -45,7 +45,6 @@ server.listen(port, function() {
 });
 
 // create websocket server on top of http server
-// TODO: figure out appropriate max and min names
 const wsServer = new WebSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
@@ -54,8 +53,8 @@ const wsServer = new WebSocketServer({
 });
 
 function originIsAllowed(origin) {
-  // TODO: put logic here to detect whether the specified origin is allowed.
-  return true;
+  // put logic here to detect whether the specified origin is allowed.
+  return origin.startsWith("http://localhost") || origin.startsWith("http://128.84.48.178");
 }
 
 wsServer.on('request', function(request) {
@@ -78,7 +77,7 @@ wsServer.on('request', function(request) {
     if (message.type === 'utf8') {
     //   console.log('Received utf8 Message');
 
-      // TODO: POST message to backend
+      // POST message to backend
       let postData = {image:  message.utf8Data};
       let options = {
         method: 'post',
@@ -88,7 +87,7 @@ wsServer.on('request', function(request) {
         url: "http://de-inference-service"
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
-        // TODO: send response back over websocket
+        // send response back over websocket
         // console.log('Upload successful!  Server responded with:', body);
         if (body) 
             connection.send(JSON.stringify(body));
