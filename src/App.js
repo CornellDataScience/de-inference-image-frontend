@@ -152,8 +152,12 @@ let makeWebsocketURL = function() {
       new_uri = "ws:";
   }
 
-  let new_host = loc.host.slice(0, loc.host.indexOf(':'));
-  new_uri += "//" + new_host + ":8080";
+  // for when running locally
+//   let new_host = loc.host.slice(0, loc.host.indexOf(':'));
+//   new_uri += "//" + new_host + ":8080";
+//   new_uri += loc.pathname;
+
+  new_uri += "//" + loc.host;
   new_uri += loc.pathname;
 
   return new_uri;
