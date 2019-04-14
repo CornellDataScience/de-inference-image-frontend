@@ -86,8 +86,6 @@ class App extends Component {
     this.setState({
       currentLatency: currentLatency,
     })
-    // extract event data
-    let faceData =  JSON.parse(event.data);
 
     // get canvas
     let canvas = document.getElementById("displayCanvas");
@@ -101,6 +99,9 @@ class App extends Component {
 
       // draw boxes
       if (event.data) {
+        // extract event data
+        let faceData = JSON.parse(event.data);
+
         for(let i = 0; i < faceData.length; i++){
           let points = faceData[i]["coordinates"];
           // draw image

@@ -76,7 +76,7 @@ wsServer.on('request', function(request) {
 
     // ensure we actually received a utf8 message
     if (message.type === 'utf8') {
-      console.log('Received utf8 Message');
+    //   console.log('Received utf8 Message');
 
       // TODO: POST message to backend
       let postData = {image:  message.utf8Data};
@@ -89,7 +89,9 @@ wsServer.on('request', function(request) {
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         // TODO: send response back over websocket
-        console.log('Upload successful!  Server responded with:', body);
+        // console.log('Upload successful!  Server responded with:', body);
+        if (body) 
+            connection.send(JSON.stringify(body));
       });
     }
   });
