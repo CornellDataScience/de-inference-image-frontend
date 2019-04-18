@@ -84,21 +84,22 @@ wsServer.on('request', function(request) {
         body: postData,
         json: true,
         // url: "http://localhost:8000"
-        url: "http://de-inference-service"
+        url: "http://de-inference-service:8000"
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         if(err) {
           console.log("error during post");
           console.log(err);
-        }
+        } else {
+          // print http response
+          console.log('statusCode:', httpResponse && httpResponse.statusCode);
 
-        // print http response
-        console.log('statusCode:', httpResponse && httpResponse.statusCode);
-
-        // send response back over websocket
-        console.log('Upload successful!  Server responded with:', body);
-        if (body) 
+          // send response back over websocket
+          console.log('Upload successful!  Server responded with:', body);
+          if (body) { 
             connection.send(JSON.stringify(body));
+          }
+        }
       });
     }
   });
