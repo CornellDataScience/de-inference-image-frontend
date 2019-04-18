@@ -87,6 +87,11 @@ wsServer.on('request', function(request) {
         url: "http://de-inference-service"
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
+        if(err) {
+          console.log("error during post");
+          console.log(err);
+        }
+
         // send response back over websocket
         console.log('Upload successful!  Server responded with:', body);
         if (body) 
