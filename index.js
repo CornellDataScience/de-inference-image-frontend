@@ -89,6 +89,7 @@ wsServer.on('request', function(request) {
         url: "http://de-inference-service:8000"
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
+        console.log("post resp");
         if(err) {
           console.log("error during post");
           console.log(err);
