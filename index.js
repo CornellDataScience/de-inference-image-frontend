@@ -48,7 +48,7 @@ server.listen(port, function() {
 const wsServer = new WebSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
-  maxReceivedFrameSize: 1000000,
+  maxReceivedFrameSize: 10000000,
   maxReceivedMessageSize: 10000000
 });
 
