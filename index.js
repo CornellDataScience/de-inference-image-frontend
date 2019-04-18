@@ -86,7 +86,7 @@ wsServer.on('request', function(request) {
         body: postData,
         json: true,
         // url: "http://localhost:8000"
-        url: "http://de-inference-service:8000"
+        url: "http://de-inference-service:8080"
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         console.log("post resp");
