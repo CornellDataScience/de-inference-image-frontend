@@ -77,6 +77,8 @@ wsServer.on('request', function(request) {
     if (message.type === 'utf8') {
     //   console.log('Received utf8 Message');
 
+      console.log("utf8 message; posting");
+
       // POST message to backend
       let postData = {image:  message.utf8Data};
       let options = {
