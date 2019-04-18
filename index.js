@@ -92,6 +92,9 @@ wsServer.on('request', function(request) {
           console.log(err);
         }
 
+        // print http response
+        console.log('statusCode:', httpResponse && httpResponse.statusCode);
+
         // send response back over websocket
         console.log('Upload successful!  Server responded with:', body);
         if (body) 
