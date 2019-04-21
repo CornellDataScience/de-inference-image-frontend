@@ -8,8 +8,8 @@ const requestlib = require("request");
 // const passport = require("passport");
 // const Strategy = require("passport-github").Strategy;
 // const httpProxy = require('http-proxy')
-const http = require('http');
-// const fs = require('fs');
+const https = require('https');
+const fs = require('fs');
 const WebSocketServer = require('websocket').server;
 
 // set the port we'll send to later
@@ -38,11 +38,14 @@ passport.deserializeUser(function(object, cb) {
 })*/
 
 // create http server
+
 app.use(express.static(path.join(__dirname, "build")));
-const server = http.createServer(app);
-server.listen(port, function() {
-  console.log((new Date()) + ' Server is listening on port ' + port);
-});
+const server = https.createServer({
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.cert')
+}, app).listen(3000, () => {
+  console.log('Listening...')
+})
 
 // create websocket server on top of http server
 const wsServer = new WebSocketServer({
