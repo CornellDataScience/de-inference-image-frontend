@@ -57,7 +57,8 @@ const wsServer = new WebSocketServer({
 
 function originIsAllowed(origin) {
   // put logic here to detect whether the specified origin is allowed.
-  return origin.startsWith("http://localhost") || origin.startsWith("http://128.84.48.178");
+  return origin.startsWith("http://localhost") || origin.startsWith("http://128.84.48.178") ||
+          origin.startsWith("https://localhost") || origin.startsWith("https://128.84.48.178");
 }
 
 wsServer.on('request', function(request) {
