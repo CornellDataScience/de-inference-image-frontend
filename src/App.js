@@ -13,6 +13,8 @@ class App extends Component {
       socket: null,
       currentLatency: 0,
       currentImageStartTime: null,
+      imageWidth: 0,
+      imageHeight: 0
     };
 
     // bind methods
@@ -37,13 +39,7 @@ class App extends Component {
             <div className='controls'>
               <button onClick={this.sendImage}>capture</button>
             </div>
-            <canvas id="displayCanvas" width="640" height="480" />
-            {/* <div style={{width:"500", height:"500", margin:"20px 60px", border:"1px solid blue"}}>
-              <div style={{width:"100%", height:"100%", position:"relative"}}>
-                {this.state.displayedImage ? <img id="displayedImage" src={this.state.displayedImage} style={{ position:"absolute", top:"0px", left:"0px"}} /> : null}
-                <canvas id="overlayCanvas" style={{ width:"500", height:"500", position:"absolute", top:"0px", left:"0px", "backgroundColor": "rgba(255,0,0,.1)"}}></canvas>
-              </div>
-            </div> */}
+            <canvas id="displayCanvas" height={this.state.imageHeight} width={this.state.imageWidth} style={{width: this.state.imageWidth, height: this.state.imageHeight}} />
           </div>
         </div>
       </div>
@@ -52,14 +48,10 @@ class App extends Component {
 
   componentDidMount() {
     let socket = new WebSocket(makeWebsocketURL());
-    //let socket = new WebSocket("ws://localhost:8765");
     socket.onmessage = this.boundOnReceive;
     this.setState({ socket: socket });
-     //socket.onerror = this.boundOnReceive;
-     //socket.onclose = this.boundOnReceive;
-       //console.log("Socket is closed now.");
-
-
+    //socket.onerror = this.boundOnReceive;
+    //socket.onclose = this.boundOnReceive;
   }
 // // for setting latency
 //   setInterval() {
@@ -85,44 +77,45 @@ class App extends Component {
       currentLatency: currentLatency,
     })
 
-    // get canvas
-    let canvas = document.getElementById("displayCanvas");
-    let context = canvas.getContext('2d');
+    if (event.data) {
+      // extract event data
+      let faceData = JSON.parse(event.data);
 
-    // draw screenshot
-    let ssImg = new Image();
-    ssImg.onload = function() {
-      // add image
-      context.drawImage(ssImg, 0, 0, 640, 480);
+      // draw screenshot
+      let ssImg = new Image();
+      ssImg.onload = function() {
+        // set canvas height and width
+        this.setState({imageWidth: ssImg.width, imageHeight: ssImg.height}, () => {
+          // get canvas
+          let canvas = document.getElementById("displayCanvas");
+          let context = canvas.getContext('2d');
 
-      // draw boxes
-      if (event.data) {
-        // extract event data
-        let faceData = JSON.parse(event.data);
+          // add image
+          context.drawImage(ssImg, 0, 0, ssImg.width, ssImg.height);
 
-        for(let i = 0; i < faceData.length; i++){
-          let points = faceData[i]["coordinates"];
-          // draw image
-          context.beginPath();
-          context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
-          context.lineWidth = 1.5;
-          context.strokeStyle = 'red';
-          context.stroke();
+          // draw boxes
+          for(let i = 0; i < faceData.length; i++){
+            let points = faceData[i]["coordinates"];
+            // draw image
+            context.beginPath();
+            context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
+            context.lineWidth = 1.5;
+            context.strokeStyle = 'red';
+            context.stroke();
 
-          // add label
-          context.fontSize = "10px";
-          context.fillStyle = "red";
-          context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
-        }
-      }
-    };
-    ssImg.src = this.state.currentImage;
+            // add label
+            context.fontSize = "10px";
+            context.fillStyle = "red";
+            context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
+          }
+          
+        });
+      }.bind(this);
+      ssImg.src = this.state.currentImage;
 
-    // send new image immediately
-    this.sendImage();
-
-    // after we draw, send a new image in 0.1s
-    // setTimeout(function() { this.sendImage(); }.bind(this), 100);
+      // send new image immediately
+      this.sendImage();
+    }
   }
 
   sendImage() {
