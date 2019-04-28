@@ -1,6 +1,5 @@
 # DE Facial Recognition Frontend
 
-## Available Scripts
 ## Requirements
 
 For development, you will only need Node.js installed on your environement.

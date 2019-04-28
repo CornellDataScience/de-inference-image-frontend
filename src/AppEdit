@@ -20,8 +20,6 @@ class App extends Component {
     // bind methods
     this.boundOnReceive = this.boundOnReceive.bind(this);
     this.sendImage = this.sendImage.bind(this);
-    this.drawWeb = this.drawWeb.bind(this);
-    
   }
 
   render() {
@@ -32,7 +30,7 @@ class App extends Component {
           audio={false}
           ref={node => this.webcam = node}
         />
-        <canvas id="webcamCanvas" height={this.state.imageHeight} width={this.state.imageWidth} style={{width: this.state.imageWidth, height: this.state.imageHeight}} />
+
 
         <div>
         <div> currentLatency: {this.state.currentLatency} </div>
@@ -47,55 +45,6 @@ class App extends Component {
       </div>
     );
   }
-
-  clearOverlay() {
-      let canvas = document.getElementById('webcamCanvas');
-      let context = canvas.getContext('2d');
-      context.clearRect(0, 0, this.state.imageWidth, this.state.imageHeight);
-      context.strokeStyle = '#ff0000';
-      context.lineWidth = 5;
-      return context;
-    }
-
-    // showResults(results){
-    //   let context = this.clearOverlay();
-    //   this.drawWeb(context,results);
-    // }
-
-
-  drawWeb(event){
-    if(event.data){
-      // extract event data
-      let canvas = document.createElement('webcamCanvas');
-      canvas.width = this.state.imageWidth;
-      canvas.height = this.state.imageHeight;
-      let context = this.clearOverlay();
-      let faceData = JSON.parse(event.data);
-
-          // get canvas
-          context.drawImage(this.webcam,0,0,this.state.imageWidth,this.state.imageHeight);
-          // draw boxes
-          for(let i = 0; i < faceData.length; i++){
-            let points = faceData[i]["coordinates"];
-            // draw image
-            context.beginPath();
-            context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
-            context.lineWidth = 1.5;
-            context.strokeStyle = "red";
-            context.stroke();
-
-            // add label
-            context.fontSize = "10px";
-            context.fillStyle = "red";
-            context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
-
-          }
-
-
-    }
-  }
-
-
 
   componentDidMount() {
     let socket = new WebSocket(makeWebsocketURL());
@@ -113,10 +62,10 @@ class App extends Component {
 //   socket.on('pong', function(){
 //     currentLatency = Date.now() - startTime;
 //   }
-
+//
 
   componentWillUnmount() {
-    //TODO: low priority - close connection
+    // TODO: low priority - close connection
   }
 
   boundOnReceive(event) {
@@ -159,7 +108,7 @@ class App extends Component {
             context.fillStyle = "red";
             context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
           }
-          
+
         });
       }.bind(this);
       ssImg.src = this.state.currentImage;
