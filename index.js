@@ -41,8 +41,8 @@ passport.deserializeUser(function(object, cb) {
 
 app.use(express.static(path.join(__dirname, "build")));
 const server = https.createServer({
-  key: fs.readFileSync('server.key'),
-  cert: fs.readFileSync('server.cert')
+  key: process.env.TLS_CERT,
+  cert: process.env.TLS_KEY
 }, app).listen(3000, () => {
   console.log('Listening...')
 })
