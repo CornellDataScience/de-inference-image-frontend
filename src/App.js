@@ -48,8 +48,7 @@ class App extends Component {
     );
   }
 
-  clearOverlay() {
-      let canvas = document.getElementById('webcamCanvas');
+  clearOverlay(canvas) {
       let context = canvas.getContext('2d');
       context.clearRect(0, 0, this.state.imageWidth, this.state.imageHeight);
       context.strokeStyle = '#ff0000';
@@ -67,9 +66,9 @@ class App extends Component {
     if(event.data){
       // extract event data
       let canvas = document.createElement('webcamCanvas');
-      canvas.width = this.state.imageWidth;
-      canvas.height = this.state.imageHeight;
-      let context = this.clearOverlay();
+      // canvas.width = this.state.imageWidth;
+      // canvas.height = this.state.imageHeight;
+      let context = this.clearOverlay(canvas);
       let faceData = JSON.parse(event.data);
 
           // get canvas
@@ -124,9 +123,11 @@ class App extends Component {
     const currentTime = new Date();
     const currentLatency = currentTime - this.state.currentImageStartTime;
 
+    // this.drawWeb(event);
+
     this.setState({
       currentLatency: currentLatency,
-    })
+    });
 
     if (event.data) {
       // extract event data
