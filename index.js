@@ -86,8 +86,8 @@ wsServer.on('request', function(request) {
         method: 'post',
         body: postData,
         json: true,
-        // url: "http://localhost:8000" // local testing mode
-        url: "http://de-inference-service:80" // deployment mode
+        url: "http://localhost:8000" // local testing mode
+        // url: "http://de-inference-service:80" // deployment mode
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         console.log("post resp");
