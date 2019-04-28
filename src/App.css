@@ -31,3 +31,20 @@
     transform: rotate(360deg);
   }
 }
+
+
+.rightside{
+  position: relative;
+
+}
+
+
+#webcamCanvas{
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;  
+  top: 30px;
+
+}

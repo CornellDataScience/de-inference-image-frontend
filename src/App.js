@@ -26,13 +26,12 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Webcam
-          id="cameraView"
-          audio={false}
-          ref={node => this.webcam = node}
-        />
-        <canvas id="webcamCanvas" height={this.state.imageHeight} width={this.state.imageWidth} style={{width: this.state.imageWidth, height: this.state.imageHeight}} />
-
+          <Webcam
+            id="cameraView"
+            audio={false}
+            ref={node => this.webcam = node}
+          />
+          <canvas id="webcamCanvas" height={this.state.imageHeight} width={this.state.imageWidth} style={{width: this.state.imageWidth, height: this.state.imageHeight}} />
         <div>
         <div> currentLatency: {this.state.currentLatency} </div>
       <h2>Screenshots</h2>
@@ -150,6 +149,7 @@ class App extends Component {
             context.beginPath();
             context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
             context.lineWidth = 1.5;
+
             context.strokeStyle = "red";
             context.stroke();
 
