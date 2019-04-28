@@ -132,59 +132,36 @@ class App extends Component {
       // extract event data
       let faceData = JSON.parse(event.data);
 
-      // draw over video
-      let canvas = document.getElementById('webcamCanvas');
-      let context = this.clearOverlay(canvas);
+      // resize canvas based on image returned
+      let ssImg = new Image();
+      ssImg.onload = function() {
+        // set canvas height and width
+        this.setState({imageWidth: ssImg.width, imageHeight: ssImg.height}, () => {
+          // draw over video
+          let canvas = document.getElementById('webcamCanvas');
+          let context = this.clearOverlay(canvas);
 
-      // get canvas
-      context.drawImage(this.webcam,0,0,this.state.imageWidth,this.state.imageHeight);
-      // draw boxes
-      for(let i = 0; i < faceData.length; i++){
-        let points = faceData[i]["coordinates"];
-        // draw image
-        context.beginPath();
-        context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
-        context.lineWidth = 1.5;
-        context.strokeStyle = "red";
-        context.stroke();
+          // get canvas
+          // context.drawImage(this.webcam,0,0,this.state.imageWidth,this.state.imageHeight);
+          // draw boxes
+          for(let i = 0; i < faceData.length; i++){
+            let points = faceData[i]["coordinates"];
+            // draw image
+            context.beginPath();
+            context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
+            context.lineWidth = 1.5;
+            context.strokeStyle = "red";
+            context.stroke();
 
-        // add label
-        context.fontSize = "10px";
-        context.fillStyle = "red";
-        context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
-      }
-
-      // draw screenshot
-      // let ssImg = new Image();
-      // ssImg.onload = function() {
-      //   // set canvas height and width
-      //   this.setState({imageWidth: ssImg.width, imageHeight: ssImg.height}, () => {
-      //     // get canvas
-      //     let canvas = document.getElementById("displayCanvas");
-      //     let context = canvas.getContext('2d');
-
-      //     // add image
-      //     context.drawImage(ssImg, 0, 0, ssImg.width, ssImg.height);
-
-      //     // draw boxes
-      //     for(let i = 0; i < faceData.length; i++){
-      //       let points = faceData[i]["coordinates"];
-      //       // draw image
-      //       context.beginPath();
-      //       context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
-      //       context.lineWidth = 1.5;
-      //       context.strokeStyle = 'red';
-      //       context.stroke();
-
-      //       // add label
-      //       context.fontSize = "10px";
-      //       context.fillStyle = "red";
-      //       context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
-      //     }
+            // add label
+            context.fontSize = "10px";
+            context.fillStyle = "red";
+            context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
+          }
           
-      //   });
-      // }.bind(this);
-      // ssImg.src = this.state.currentImage;
+        });
+      }.bind(this);
+      ssImg.src = this.state.currentImage;
 
       // send new image immediately
       this.sendImage();
