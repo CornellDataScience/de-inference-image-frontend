@@ -43,8 +43,8 @@ app.use(express.static(path.join(__dirname, "build")));
 const server = https.createServer({
   key: process.env.TLS_CERT,
   cert: process.env.TLS_KEY
-}, app).listen(3000, () => {
-  console.log('Listening...')
+}, app).listen(port, () => {
+  console.log((new Date()) + ' Server is listening on port ' + port)
 })
 
 // create websocket server on top of http server
@@ -126,4 +126,5 @@ wsServer.on('request', function(request) {
 //  proxy.web(req, res);
 //});
 
-console.log("App is listening on port " + port);
+console.log("App is started on port " + port);
+console.log("You should see a message about server listening above");
