@@ -29,6 +29,16 @@ spec:
               secretKeyRef:
                 name: githuboauth
                 key: secret
+          - name: TLS_CERT
+            valueFrom:
+              secretKeyRef:
+                name: tls-cert-de-frontend
+                key: cert
+          - name: TLS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: tls-cert-de-frontend
+                key: key
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
