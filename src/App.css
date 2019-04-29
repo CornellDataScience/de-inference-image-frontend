@@ -32,12 +32,30 @@
   }
 }
 
-
 .rightside{
   position: relative;
 
 }
 
+button{
+  border-radius: 5px;
+  font-family: sans-serif;
+  font-size: 13pt;
+  padding: 18px;
+  border: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  background-color: rgb(51, 129, 0);
+  color:white;
+
+}
+button:hover{
+  box-shadow: 0 7px 15px 0 rgba(0,0,0,0.3);
+}
+
+button:active{
+  background-color: rgb(90, 180, 30);
+}
 
 #webcamCanvas{
   position: absolute;
@@ -45,6 +63,10 @@
   margin-right: auto;
   left: 0;
   right: 0;  
-  top: 30px;
+  top: 60px;
+}
 
+h1{
+  font-size: 18pt;
+  margin-bottom: 50px;
 }

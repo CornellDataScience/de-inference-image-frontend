@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Webcam from "react-webcam";
 
@@ -32,16 +31,11 @@ class App extends Component {
             ref={node => this.webcam = node}
           />
           <canvas id="webcamCanvas" height={this.state.imageHeight} width={this.state.imageWidth} style={{width: this.state.imageWidth, height: this.state.imageHeight}} />
-        <div>
-        <div> currentLatency: {this.state.currentLatency} </div>
-      <h2>Screenshots</h2>
-          <div className='screenshots'>
-            <div className='controls'>
-              <button onClick={this.sendImage}>capture</button>
-            </div>
-            <canvas id="displayCanvas" height={this.state.imageHeight} width={this.state.imageWidth} style={{width: this.state.imageWidth, height: this.state.imageHeight}} />
-          </div>
-        </div>
+
+          <h1> Current Latency: {this.state.currentLatency} </h1>
+
+          <button onClick={this.sendImage}>Capture</button>
+
       </div>
     );
   }
