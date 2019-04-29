@@ -8,8 +8,8 @@ const requestlib = require("request");
 // const passport = require("passport");
 // const Strategy = require("passport-github").Strategy;
 // const httpProxy = require('http-proxy')
-const http = require('http');
-// const fs = require('fs');
+const https = require('https');
+const fs = require('fs');
 const WebSocketServer = require('websocket').server;
 
 // set the port we'll send to later
@@ -38,11 +38,14 @@ passport.deserializeUser(function(object, cb) {
 })*/
 
 // create http server
+
 app.use(express.static(path.join(__dirname, "build")));
-const server = http.createServer(app);
-server.listen(port, function() {
-  console.log((new Date()) + ' Server is listening on port ' + port);
-});
+const server = https.createServer({
+  key: process.env.TLS_KEY,
+  cert: process.env.TLS_CERT
+}, app).listen(port, () => {
+  console.log((new Date()) + ' Server is listening on port ' + port)
+})
 
 // create websocket server on top of http server
 const wsServer = new WebSocketServer({
@@ -54,8 +57,8 @@ const wsServer = new WebSocketServer({
 
 function originIsAllowed(origin) {
   // put logic here to detect whether the specified origin is allowed.
-  return origin.startsWith("http://localhost") || origin.startsWith("http://128.84.48.178") ||
-          origin.startsWith("https://localhost") || origin.startsWith("https://128.84.48.178");
+  return origin.startsWith("http://localhost") || origin.startsWith("http://128.84.48.178") || origin.startsWith("http://cdsserver.info") ||
+          origin.startsWith("https://localhost") || origin.startsWith("https://128.84.48.178") || origin.startsWith("https://cdsserver.info");
 }
 
 wsServer.on('request', function(request) {
@@ -123,4 +126,5 @@ wsServer.on('request', function(request) {
 //  proxy.web(req, res);
 //});
 
-console.log("App is listening on port " + port);
+console.log("App is started on port " + port);
+console.log("You should see a message about server listening above");
