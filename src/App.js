@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import Webcam from "react-webcam";
 
+const PRODUCTION_MODE = false;
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -43,7 +45,8 @@ class App extends Component {
 
           <h1> Current Latency: {this.state.currentLatency} </h1>
 
-          <button onClick={this.startStream} disabled={this.started} >Capture</button>
+          {/* <button onClick={this.startStream} disabled={this.started} >Capture</button> */}
+          <button onClick={this.sendImage}  >Capture</button>
 
       </div>
     );
@@ -133,6 +136,9 @@ class App extends Component {
             });
           }.bind(this);
           ssImg.src = this.state.currentImage;
+
+          // send next image
+          this.sendImage();
         })
       }
     }
@@ -171,13 +177,13 @@ let makeWebsocketURL = function() {
       new_uri = "ws:";
   }
 
-  // for when running locally
-  // new_uri = "wss://localhost:8080"
-
-  // for when running in production
-  new_uri += "//" + loc.host;
-  new_uri += loc.pathname;
-
+  if (PRODUCTION_MODE) {
+    new_uri += "//" + loc.host;
+    new_uri += loc.pathname;
+  } else {
+    new_uri = "wss://localhost:8080"
+  }
+  
   return new_uri;
 }
 

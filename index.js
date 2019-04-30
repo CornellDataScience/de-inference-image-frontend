@@ -1,5 +1,7 @@
 "use strict";
 
+const PRODUCTION_MODE = false;
+
 // const url = require("url");
 // const proxy = require("express-http-proxy");
 const path = require("path");
@@ -37,23 +39,29 @@ passport.deserializeUser(function(object, cb) {
   cb(null, object);
 })*/
 
-// create https server - PRODUCTION
-app.use(express.static(path.join(__dirname, "build")));
-const server = https.createServer({
-  key: process.env.TLS_KEY,
-  cert: process.env.TLS_CERT
-}, app).listen(port, () => {
-  console.log((new Date()) + ' Server is listening on port ' + port)
-})
+if (PRODUCTION_MODE) {
+  // create https server - PRODUCTION
+  app.use(express.static(path.join(__dirname, "build")));
+} else {
+  // https server - DEVELOPMENT
+  app.use(express.static(path.join(__dirname, "build")));
+}
 
-// https server - DEVELOPMENT
-// app.use(express.static(path.join(__dirname, "build")));
-// const server = https.createServer({
-//   key: fs.readFileSync('server.key'),
-//   cert: fs.readFileSync('server.cert')
-// }, app).listen(port, () => {
-//   console.log((new Date()) + ' Server is listening on port ' + port)
-// })
+const server = PRODUCTION_MODE ? (
+  https.createServer({
+    key: process.env.TLS_KEY,
+    cert: process.env.TLS_CERT
+  }, app).listen(port, () => {
+    console.log((new Date()) + ' Server is listening on port ' + port)
+  })
+) : (
+  https.createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
+  }, app).listen(port, () => {
+    console.log((new Date()) + ' Server is listening on port ' + port)
+  })
+);
 
 // create websocket server on top of http server
 const wsServer = new WebSocketServer({
@@ -101,8 +109,7 @@ wsServer.on('request', function(request) {
         method: 'post',
         body: postData,
         json: true,
-        // url: "http://localhost:8000" // local testing mode
-        url: "http://de-inference-service:80" // deployment/productions mode
+        url: PRODUCTION_MODE ? "http://de-inference-service:80" : "http://localhost:8000"
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         console.log("post resp");
