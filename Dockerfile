@@ -11,6 +11,9 @@ COPY . .
 # Build webapp
 RUN npm run build
 
+# set production mode
+ENV PRODUCTION true
+
 # Serving webserver
 EXPOSE ${PORT}
 CMD [ "npm", "run", "start-server" ] 

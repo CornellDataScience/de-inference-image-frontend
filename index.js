@@ -1,6 +1,6 @@
 "use strict";
 
-const PRODUCTION_MODE = false;
+const PRODUCTION_MODE = process.env.PRODUCTION;
 
 // const url = require("url");
 // const proxy = require("express-http-proxy");
