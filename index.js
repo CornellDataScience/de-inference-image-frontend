@@ -37,8 +37,7 @@ passport.deserializeUser(function(object, cb) {
   cb(null, object);
 })*/
 
-// create http server
-
+// create https server - PRODUCTION
 app.use(express.static(path.join(__dirname, "build")));
 const server = https.createServer({
   key: process.env.TLS_KEY,
@@ -46,6 +45,15 @@ const server = https.createServer({
 }, app).listen(port, () => {
   console.log((new Date()) + ' Server is listening on port ' + port)
 })
+
+// https server - DEVELOPMENT
+// app.use(express.static(path.join(__dirname, "build")));
+// const server = https.createServer({
+//   key: fs.readFileSync('server.key'),
+//   cert: fs.readFileSync('server.cert')
+// }, app).listen(port, () => {
+//   console.log((new Date()) + ' Server is listening on port ' + port)
+// })
 
 // create websocket server on top of http server
 const wsServer = new WebSocketServer({
@@ -79,18 +87,22 @@ wsServer.on('request', function(request) {
 
     // ensure we actually received a utf8 message
     if (message.type === 'utf8') {
-    //   console.log('Received utf8 Message');
-
       console.log("utf8 message; posting");
+      
+      // unpack message
+      let unpacked = JSON.parse(message.utf8Data);
+
+      // get date from message
+      let timestamp = unpacked.timestamp;
 
       // POST message to backend
-      let postData = {image:  message.utf8Data};
+      let postData = {image:  unpacked.screenshot};
       let options = {
         method: 'post',
         body: postData,
         json: true,
-        // url: "http://localhost:8000" // local testing mode
-        url: "http://de-inference-service:80" // deployment mode
+        url: "http://localhost:8000" // local testing mode
+        // url: "http://de-inference-service:80" // deployment mode
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         console.log("post resp");
@@ -104,7 +116,7 @@ wsServer.on('request', function(request) {
           // send response back over websocket
           console.log('Upload successful!  Server responded with:', body);
           if (body) { 
-            connection.send(JSON.stringify(body));
+            connection.send(JSON.stringify({faces: body, timestamp: timestamp}));
           }
         }
       });
