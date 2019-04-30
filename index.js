@@ -39,6 +39,10 @@ passport.deserializeUser(function(object, cb) {
   cb(null, object);
 })*/
 
+// set post url
+const postURL = PRODUCTION_MODE ? "http://de-inference-service:80" : "http://localhost:8000"
+
+// set correct server to create
 if (PRODUCTION_MODE) {
   // create https server - PRODUCTION
   app.use(express.static(path.join(__dirname, "build")));
@@ -109,7 +113,7 @@ wsServer.on('request', function(request) {
         method: 'post',
         body: postData,
         json: true,
-        url: PRODUCTION_MODE ? "http://de-inference-service:80" : "http://localhost:8000"
+        url: postURL
       }
       requestlib.post(options, function callback(err, httpResponse, body) {
         console.log("post resp");
