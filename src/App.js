@@ -44,8 +44,7 @@ class App extends Component {
 
           <h1> Current Latency: {this.state.currentLatency} </h1>
 
-          {/* <button onClick={this.startStream} disabled={this.started} >Capture</button> */}
-          <button onClick={this.sendImage}  >Capture</button>
+          <button onClick={this.startStream} disabled={this.started} >Capture</button>
 
       </div>
     );
@@ -158,7 +157,8 @@ class App extends Component {
 
   startStream() {
     this.setState({ started: true }, () => {
-      this.interval = setInterval(() => this.sendImage(), 450);
+      // this.interval = setInterval(() => this.sendImage(), 450);
+      this.sendImage();
     })
   }
 }
