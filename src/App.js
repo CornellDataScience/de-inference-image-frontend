@@ -138,7 +138,14 @@ class App extends Component {
           ssImg.src = this.state.currentImage;
 
           // send next image
-          this.sendImage();
+          if (PRODUCTION_MODE) {
+            this.sendImage();
+          } else {
+            // mandatory delay if we're running in dev mode to keep backend from dying
+            setTimeout(function() { 
+              this.sendImage();
+            }.bind(this), 250)
+          }
         })
       }
     }
