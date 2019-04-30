@@ -15,8 +15,9 @@ class App extends Component {
       socket: null,
       currentLatency: 0,
       currentImageStartTime: null,
-      imageWidth: 0,
-      imageHeight: 0,
+      imageWidth: 640,
+      imageHeight: 480,
+      imageSizeSet: false,
       started: false
     };
 
@@ -24,7 +25,6 @@ class App extends Component {
     this.boundOnReceive = this.boundOnReceive.bind(this);
     this.sendImage = this.sendImage.bind(this);
     this.startStream = this.startStream.bind(this);
-    
   }
 
   render() {
@@ -35,6 +35,8 @@ class App extends Component {
             id="cameraView"
             audio={false}
             ref={node => this.webcam = node}
+            width={this.state.imageWidth}
+            height={this.state.imageHeight}
           />
           
           <span id="overlaySpan">
@@ -95,37 +97,28 @@ class App extends Component {
       // extract event data
       let faceData = unpacked.faces;
 
-      // resize canvas based on image returned
-      let ssImg = new Image();
-      ssImg.onload = function() {
-        // set canvas height and width
-        this.setState({imageWidth: ssImg.width, imageHeight: ssImg.height}, () => {
-          // draw over video
-          let canvas = document.getElementById('webcamCanvas');
-          let context = this.clearOverlay(canvas);
+      // draw over video
+      let canvas = document.getElementById('webcamCanvas');
+      let context = this.clearOverlay(canvas);
 
-          // get canvas
-          // context.drawImage(this.webcam,0,0,this.state.imageWidth,this.state.imageHeight);
-          // draw boxes
-          for(let i = 0; i < faceData.length; i++){
-            let points = faceData[i]["coordinates"];
-            // draw image
-            context.beginPath();
-            context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
-            context.lineWidth = 1.5;
+      // get canvas
+      // context.drawImage(this.webcam,0,0,this.state.imageWidth,this.state.imageHeight);
+      // draw boxes
+      for(let i = 0; i < faceData.length; i++){
+        let points = faceData[i]["coordinates"];
+        // draw image
+        context.beginPath();
+        context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
+        context.lineWidth = 1.5;
 
-            context.strokeStyle = "red";
-            context.stroke();
+        context.strokeStyle = "red";
+        context.stroke();
 
-            // add label
-            context.fontSize = "10px";
-            context.fillStyle = "red";
-            context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
-          }
-          
-        });
-      }.bind(this);
-      ssImg.src = this.state.currentImage;
+        // add label
+        context.fontSize = "10px";
+        context.fillStyle = "red";
+        context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
+      }
 
       // send next image
       this.sendImage();
@@ -139,21 +132,35 @@ class App extends Component {
       let toSend = { timestamp: new Date(), screenshot: screenshot };
 
       // store current image
-      this.setState({ currentImage: screenshot },
-        // send image to backend in callback after state is updated
-        () => {
-          this.setState({currentImageStartTime: new Date()});
-          this.state.socket.send(JSON.stringify(toSend));
-          console.log("sent");
-        })
+      this.setState({currentImageStartTime: new Date()});
+      
+      if(!this.state.imageSizeSet){
+        console.log("getting image size for first time");
+
+        let ssImg = new Image();
+        ssImg.onload = function() {
+          // set canvas height and width
+          this.setState({imageWidth: ssImg.width, imageHeight: ssImg.height, imageSizeSet: true}, () => {
+            console.log("special first run send");
+            this.state.socket.send(JSON.stringify(toSend));
+          });
+        }.bind(this);
+        ssImg.src = screenshot;
+      } else {
+        console.log("normal send");
+        this.state.socket.send(JSON.stringify(toSend));
+      }
     }
   }
 
   startStream() {
-    this.setState({ started: true }, () => {
-      // this.interval = setInterval(() => this.sendImage(), 450);
-      this.sendImage();
-    })
+    if (!this.state.started) {
+      console.log("starting stream");
+      this.setState({ started: true }, () => {
+        // this.interval = setInterval(() => this.sendImage(), 450);
+        this.sendImage();
+      })
+    }
   }
 }
 
