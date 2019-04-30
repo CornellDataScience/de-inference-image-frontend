@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Webcam from "react-webcam";
 
-const PRODUCTION_MODE = false;
+const PRODUCTION_MODE = process.env.NODE_ENV && process.env.NODE_ENV !== 'development';
 
 class App extends Component {
   constructor(props) {

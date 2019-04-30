@@ -12,7 +12,7 @@ COPY . .
 RUN npm run build
 
 # set production mode
-ENV PRODUCTION true
+ENV PRODUCTION=true
 
 # Serving webserver
 EXPOSE ${PORT}
