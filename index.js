@@ -39,6 +39,8 @@ passport.deserializeUser(function(object, cb) {
   cb(null, object);
 })*/
 
+console.log("in production? " + PRODUCTION_MODE)
+
 // set post url
 const postURL = PRODUCTION_MODE ? "http://de-inference-service:80" : "http://localhost:8000"
 

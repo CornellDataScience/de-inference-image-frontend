@@ -3,6 +3,7 @@ import './App.css';
 import Webcam from "react-webcam";
 
 const PRODUCTION_MODE = process.env.NODE_ENV && process.env.NODE_ENV !== 'development';
+console.log("in production? " + PRODUCTION_MODE)
 
 class App extends Component {
   constructor(props) {
