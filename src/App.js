@@ -16,8 +16,7 @@ class App extends Component {
       currentImageStartTime: null,
       imageWidth: 0,
       imageHeight: 0,
-      started: false,
-      lastTimestamp: null
+      started: false
     };
 
     // bind methods
@@ -93,60 +92,49 @@ class App extends Component {
       // unpack event data
       let unpacked = JSON.parse(event.data);
 
-      // get timestamp
-      let timestamp = new Date(unpacked.timestamp);
+      // extract event data
+      let faceData = unpacked.faces;
 
-      // figure out if we should continue updating
-      if(!this.state.lastTimestamp || timestamp > this.state.lastTimestamp)
-      {
-        // update timestamp
-        this.setState({lastTimestamp : timestamp}, () => {
+      // resize canvas based on image returned
+      let ssImg = new Image();
+      ssImg.onload = function() {
+        // set canvas height and width
+        this.setState({imageWidth: ssImg.width, imageHeight: ssImg.height}, () => {
+          // draw over video
+          let canvas = document.getElementById('webcamCanvas');
+          let context = this.clearOverlay(canvas);
 
-          // extract event data
-          let faceData = unpacked.faces;
+          // get canvas
+          // context.drawImage(this.webcam,0,0,this.state.imageWidth,this.state.imageHeight);
+          // draw boxes
+          for(let i = 0; i < faceData.length; i++){
+            let points = faceData[i]["coordinates"];
+            // draw image
+            context.beginPath();
+            context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
+            context.lineWidth = 1.5;
 
-          // resize canvas based on image returned
-          let ssImg = new Image();
-          ssImg.onload = function() {
-            // set canvas height and width
-            this.setState({imageWidth: ssImg.width, imageHeight: ssImg.height}, () => {
-              // draw over video
-              let canvas = document.getElementById('webcamCanvas');
-              let context = this.clearOverlay(canvas);
+            context.strokeStyle = "red";
+            context.stroke();
 
-              // get canvas
-              // context.drawImage(this.webcam,0,0,this.state.imageWidth,this.state.imageHeight);
-              // draw boxes
-              for(let i = 0; i < faceData.length; i++){
-                let points = faceData[i]["coordinates"];
-                // draw image
-                context.beginPath();
-                context.rect(points[3], points[2], points[2] - points[0], points[3] - points[1]);
-                context.lineWidth = 1.5;
-
-                context.strokeStyle = "red";
-                context.stroke();
-
-                // add label
-                context.fontSize = "10px";
-                context.fillStyle = "red";
-                context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
-              }
-              
-            });
-          }.bind(this);
-          ssImg.src = this.state.currentImage;
-
-          // send next image
-          if (PRODUCTION_MODE) {
-            this.sendImage();
-          } else {
-            // mandatory delay if we're running in dev mode to keep backend from dying
-            setTimeout(function() { 
-              this.sendImage();
-            }.bind(this), 250)
+            // add label
+            context.fontSize = "10px";
+            context.fillStyle = "red";
+            context.fillText(faceData[i]["name"], points[3] + 5, points[2] - 5);
           }
-        })
+          
+        });
+      }.bind(this);
+      ssImg.src = this.state.currentImage;
+
+      // send next image
+      if (PRODUCTION_MODE) {
+        this.sendImage();
+      } else {
+        // mandatory delay if we're running in dev mode to keep backend from dying
+        setTimeout(function() { 
+          this.sendImage();
+        }.bind(this), 250)
       }
     }
   }

@@ -94,6 +94,10 @@ wsServer.on('request', function(request) {
   let connection = request.accept(null, request.origin);
   console.log((new Date()) + ' Connection accepted.');
 
+  // create a buffer
+  let lastFaces = null;
+  let lastTimestamp = null;
+
   // handle messages over connection
   connection.on('message', function(message) {
     console.log("onmessage called");
@@ -102,11 +106,16 @@ wsServer.on('request', function(request) {
     if (message.type === 'utf8') {
       console.log("utf8 message; posting");
       
+      // send cached response if we have one
+      if (lastFaces){
+        connection.send(JSON.stringify({faces: lastFaces, timestamp: lastTimestamp}));
+      }
+
       // unpack message
       let unpacked = JSON.parse(message.utf8Data);
 
       // get date from message
-      let timestamp = unpacked.timestamp;
+      let timestamp = new Date(unpacked.timestamp);
 
       // POST message to backend
       let postData = {image:  unpacked.screenshot};
@@ -127,7 +136,12 @@ wsServer.on('request', function(request) {
 
           // send response back over websocket
           console.log('Upload successful!  Server responded with:', body);
-          if (body) { 
+          if (body && timestamp > lastTimestamp && lastFaces) { 
+            lastFaces = body;
+            lastTimestamp = timestamp;
+          } else if (body && !lastFaces) {
+            lastFaces = body;
+            lastTimestamp = timestamp;
             connection.send(JSON.stringify({faces: body, timestamp: timestamp}));
           }
         }
