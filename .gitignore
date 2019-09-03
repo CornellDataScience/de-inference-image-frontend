@@ -43,5 +43,4 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.png
-server.key
-server.cert
+secrets/
